@@ -3,3 +3,5 @@
 /.idea/
 template.pnproj
 /build/
+*.elf
+*.gba

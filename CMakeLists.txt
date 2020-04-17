@@ -14,6 +14,16 @@ project(template)
 # List all the source files in out directory
 LIST(APPEND SOURCE_FILES
         ./source/template.c
+        ./source/items.h
+        ./source/items.c
+        ./source/map_sample.h
+        ./source/map_sample.c
+        ./source/bg0.h
+        ./source/bg0.c
+        ./source/sprite.h
+        ./source/sprite.c
+        ./source/idle.h
+        ./source/idle.c
         )
 
 LIST(APPEND EXTRA_SOURCE_FILES
@@ -23,19 +33,19 @@ LIST(APPEND EXTRA_DATA_FILES
         )
 
 LIST(APPEND INCLUDE_DIRECTORIES
-        ${DEVKITPRO}/libgba/include
+        ${DEVKITPRO}/libtonc/include
         ${DEVKITARM}/arm-none-eabi/include/
         )
 
 LIST(APPEND TARGET_LIBRARIES
-        ${DEVKITPRO}/libgba/lib
+        ${DEVKITPRO}/libtonc/lib
         )
 
 link_directories(${TARGET_LIBRARIES})
 include_directories(${INCLUDE_DIRECTORIES})
 add_executable(template.elf ${SOURCE_FILES} ${INCLUDE_FILES} ${EXTRA_SOURCE_FILES} ${EXTRA_DATA_FILES}) # Create the elf file
 add_gba_executable(template.elf) # Generate the .gba from the elf
-target_link_libraries(template.elf gba mm) # Link the application, libgba and maxmod
+target_link_libraries(template.elf tonc) # Link the application, libgba and maxmod
 
 # List all the MaxMOD music files
 #file(GLOB_RECURSE MUSIC_FILES

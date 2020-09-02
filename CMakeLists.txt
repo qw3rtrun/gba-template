@@ -14,27 +14,25 @@ project(template)
 # List all the source files in out directory
 LIST(APPEND SOURCE_FILES
         ./source/template.c
-        ./source/items.h
-        ./source/items.c
-        ./source/map_sample.h
-        ./source/map_sample.c
-        ./source/bg0.h
-        ./source/bg0.c
-        ./source/sprite.h
+        ./source/resources.c
         ./source/sprite.c
-        ./source/idle.h
-        ./source/idle.c
+        )
+
+LIST(APPEND INCLUDE_FILES
         )
 
 LIST(APPEND EXTRA_SOURCE_FILES
         )
 
 LIST(APPEND EXTRA_DATA_FILES
+        ./resources/idle.s
+        ./resources/run.s
         )
 
 LIST(APPEND INCLUDE_DIRECTORIES
+        ./resources
         ${DEVKITPRO}/libtonc/include
-        ${DEVKITARM}/arm-none-eabi/include/
+        ${DEVKITARM}/arm-none-eabi/include
         )
 
 LIST(APPEND TARGET_LIBRARIES

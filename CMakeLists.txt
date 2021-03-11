@@ -14,16 +14,8 @@ project(template)
 # List all the source files in out directory
 LIST(APPEND SOURCE_FILES
         ./source/template.c
-        ./source/items.h
-        ./source/items.c
-        ./source/map_sample.h
-        ./source/map_sample.c
         ./source/bg0.h
         ./source/bg0.c
-        ./source/sprite.h
-        ./source/sprite.c
-        ./source/idle.h
-        ./source/idle.c
         )
 
 LIST(APPEND EXTRA_SOURCE_FILES

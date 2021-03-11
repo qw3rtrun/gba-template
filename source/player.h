@@ -1,0 +1,1 @@
+void player_draw(OBJ_ATTR* attr);

@@ -1,1 +1,0 @@
-void bg0_draw();

@@ -14,10 +14,6 @@ project(template)
 # List all the source files in out directory
 LIST(APPEND SOURCE_FILES
         ./source/template.c
-        source/bg0.h
-        source/bg0.c
-        source/player.c
-        source/player.h
         )
 
 LIST(APPEND EXTRA_SOURCE_FILES

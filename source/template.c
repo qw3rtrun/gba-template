@@ -1,49 +1,116 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "Simplify"
-#pragma ide diagnostic ignored "EndlessLoop"
+#include <stdio.h>
 #include <tonc.h>
-#include "bg0.h"
-#include "player.h"
 
-int main() {
-    REG_DISPCNT = DCNT_MODE0 | DCNT_BG0 | DCNT_BG1| DCNT_OBJ | DCNT_OBJ_1D;
-    OBJ_ATTR obj_buffer[128];
-    oam_init(obj_buffer, 128);
+u8 txt_scrolly= 8;
 
-    bg0_draw();
-    player_draw(obj_buffer);
+const char *names[]=
+        {   "C ", "C#", "D ", "D#", "E ", "F ", "F#", "G ", "G#", "A ", "A#", "B "  };
 
-    tte_init_se_default(1, BG_CBB(6) | BG_SBB(31));
-//    tte_init_con();
-    //tte_putc(1);
-    tte_write("\n 0000");
-    //tte_set_pos(0, 0);
-    //tte_putc(1);
+// === FUNCTIONS ======================================================
 
-    u8 px = 0;
-    u8 py = 0;
-    obj_set_pos(obj_buffer, 16 * px + 48, 16 * py + 8 );
-    oam_copy(oam_mem, obj_buffer, 1);
+// Show the octave the next note will be in
+void note_prep(int octave)
+{
+    char str[32];
+    siprintf(str, "[  %+2d]", octave);
+    se_puts(8, txt_scrolly, str, 0x1000);
+}
 
-    while (1) {
-        vid_vsync();
-        key_poll();
-        if (key_hit(KEY_DOWN)) {
-            py = (py + 1) % 9;
-        }
-        if (key_hit(KEY_UP)) {
-            py = py > 0 ? py -1 : 8;
-        }
 
-        if (key_hit(KEY_RIGHT)) {
-            px = (px + 1) % 9;
-        }
-        if (key_hit(KEY_LEFT)) {
-            px = px > 0 ? px - 1 : 8;
-        }
-        //px = (px + key_hit(KEY_RIGHT) - key_hit(KEY_LEFT)) % 9;
-        obj_set_pos(obj_buffer, 16 * px + 48, 16 * py + 8 );
-        oam_copy(oam_mem, obj_buffer, 1);
+// Play a note and show which one was played
+void note_play(int note, int octave)
+{
+    char str[32];
+
+    // Clear next top and current rows
+    SBB_CLEAR_ROW(31, (txt_scrolly/8-2)&31);
+    SBB_CLEAR_ROW(31, txt_scrolly/8);
+
+    // Display note and scroll
+    siprintf(str, "%02s%+2d", names[note], octave);
+    se_puts(16, txt_scrolly, str, 0);
+
+    txt_scrolly -= 8;
+    REG_BG0VOFS= txt_scrolly-8;
+
+    // Play the actual note
+    REG_SND1FREQ = SFREQ_RESET | SND_RATE(note, octave);
+}
+
+
+// Play a little ditty
+void sos()
+{
+    const u8 lens[6]= { 1,1,4, 1,1,4 };
+    const u8 notes[6]= { 0x02, 0x05, 0x12,  0x02, 0x05, 0x12 };
+    int ii;
+    for(ii=0; ii<6; ii++)
+    {
+        note_play(notes[ii]&15, notes[ii]>>4);
+        VBlankIntrDelay(8*lens[ii]);
     }
 }
-#pragma clang diagnostic pop
+
+int main()
+{
+    REG_DISPCNT= DCNT_MODE0 | DCNT_BG0;
+
+    irq_init(NULL);
+    irq_add(II_VBLANK, NULL);
+
+    txt_init_std();
+    txt_init_se(0, BG_CBB(0) | BG_SBB(31), 0, CLR_ORANGE, 0);
+    pal_bg_mem[0x11]= CLR_GREEN;
+
+    int octave= 0;
+
+    // turn sound on
+    REG_SNDSTAT= SSTAT_ENABLE;
+    // snd1 on left/right ; both full volume
+    REG_SNDDMGCNT = SDMG_BUILD_LR(SDMG_SQR1, 7);
+    // DMG ratio to 100%
+    REG_SNDDSCNT= SDS_DMG100;
+
+    // no sweep
+    REG_SND1SWEEP= SSW_OFF;
+    // envelope: vol=12, decay, max step time (7) ; 50% duty
+    REG_SND1CNT= SSQR_ENV_BUILD(12, 0, 1) | SSQR_DUTY1_2;
+    REG_SND1FREQ= 0;
+
+    sos();
+
+    while(1)
+    {
+        VBlankIntrWait();
+        key_poll();
+
+        // Change octave:
+        octave += bit_tribool(key_hit(-1), KI_R, KI_L);
+        octave= wrap(octave, -2, 6);
+        note_prep(octave);
+
+        // Play note
+        if(key_hit(KEY_DIR|KEY_A|KEY_START|KEY_SELECT))
+        {
+            if(key_hit(KEY_UP))
+                note_play(NOTE_D, octave+1);
+            if(key_hit(KEY_LEFT))
+                note_play(NOTE_B, octave);
+            if(key_hit(KEY_RIGHT))
+                note_play(NOTE_A, octave);
+            if(key_hit(KEY_DOWN))
+                note_play(NOTE_F, octave);
+            if(key_hit(KEY_A))
+                note_play(NOTE_D, octave);
+            if(key_hit(KEY_START))
+                note_play(NOTE_C, octave);
+            if(key_hit(KEY_SELECT))
+                note_play(NOTE_E, octave);
+        }
+
+        // Play ditty
+        if(key_hit(KEY_B))
+            sos();
+    }
+    return 0;
+}

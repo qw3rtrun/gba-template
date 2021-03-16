@@ -69,21 +69,20 @@ void bg0_draw() {
         }
     }
 
-    se_mat[8][3][26] = LEFT_TOP;
-    se_mat[8][3][27] = RIGHT_TOP;
-    se_mat[8][4][26] = LEFT_BOTTOM;
-    se_mat[8][4][27] = RIGHT_BOTTOM;
+    se_mat[8][1][26] = LEFT_TOP;
+    se_mat[8][1][27] = RIGHT_TOP;
+    se_mat[8][2][26] = LEFT_BOTTOM;
+    se_mat[8][2][27] = RIGHT_BOTTOM;
 
-    se_mat[8][6][26] = LEFT_TOP;
-    se_mat[8][6][27] = RIGHT_TOP;
-    se_mat[8][7][26] = LEFT_BOTTOM;
-    se_mat[8][7][27] = RIGHT_BOTTOM;
+    se_mat[8][4][26] = LEFT_TOP;
+    se_mat[8][4][27] = RIGHT_TOP;
+    se_mat[8][5][26] = LEFT_BOTTOM;
+    se_mat[8][5][27] = RIGHT_BOTTOM;
 
-    se_mat[8][9][26] = LEFT_TOP;
-    se_mat[8][9][27] = RIGHT_TOP;
-    se_mat[8][10][26] = LEFT_BOTTOM;
-    se_mat[8][10][27] = RIGHT_BOTTOM;
+    se_mat[8][7][26] = LEFT_TOP;
+    se_mat[8][7][27] = RIGHT_TOP;
+    se_mat[8][8][26] = LEFT_BOTTOM;
+    se_mat[8][8][27] = RIGHT_BOTTOM;
 
     REG_BG0CNT = BG_CBB(0) | BG_4BPP | BG_SBB(8) | BG_REG_32x32;
 }
-

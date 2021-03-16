@@ -6,12 +6,19 @@
 #include "player.h"
 
 int main() {
-    REG_DISPCNT = DCNT_MODE0 | DCNT_BG0 | DCNT_OBJ | DCNT_OBJ_1D;
+    REG_DISPCNT = DCNT_MODE0 | DCNT_BG0 | DCNT_BG1| DCNT_OBJ | DCNT_OBJ_1D;
     OBJ_ATTR obj_buffer[128];
     oam_init(obj_buffer, 128);
 
     bg0_draw();
     player_draw(obj_buffer);
+
+    tte_init_se_default(1, BG_CBB(6) | BG_SBB(31));
+//    tte_init_con();
+    //tte_putc(1);
+    tte_write("\n 0000");
+    //tte_set_pos(0, 0);
+    //tte_putc(1);
 
     u8 px = 0;
     u8 py = 0;
